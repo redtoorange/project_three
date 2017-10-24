@@ -1,0 +1,7 @@
++RImproper_Returns
++RGlobal_Variables
++REXIT_Statements_With_No_Loop_Name
++RExits_From_Conditional_Loops
++RExceptions_As_Control_Flow
++REnumeration_Ranges_In_CASE_Statements
++RPOS_On_Enumeration_Types
