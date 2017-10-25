@@ -10,7 +10,8 @@
 --    by the Fruit_Tree package.
 
 package body Fruit_Tree is
-   procedure Print_Error_Line( input_file : in File_Type)   is
+   procedure Print_Error_Line( input_file : in File_Type)   
+   is
       line_num : Integer := Integer( Line( input_file ) )-1;
    begin
       Put( "Error on Line " ); 
@@ -47,7 +48,8 @@ package body Fruit_Tree is
    -- Parse_Fruit -------------------------------------------------------------
    ----------------------------------------------------------------------------
    procedure Parse_Fruit( c_tree : in out Tree;
-                          input_file : in out File_Type ) is
+                          input_file : in out File_Type ) 
+   is
       c_fruit : Fruit;
    begin
       Get_Fruit( c_fruit, input_file );
@@ -83,9 +85,9 @@ package body Fruit_Tree is
    ----------------------------------------------------------------------------
    -- In_List -----------------------------------------------------------------
    ----------------------------------------------------------------------------
-   function In_List(tl : in Tree_List;
-                    pos : out Positive;
-                    c_tree : in Fruit_Tree.Tree ) return Boolean
+   function In_List(  tl : in Tree_List;
+                     pos : out Positive;
+                  c_tree : in Fruit_Tree.Tree ) return Boolean
    is
       found : Boolean := False;
    begin
@@ -105,7 +107,8 @@ package body Fruit_Tree is
    ----------------------------------------------------------------------------
    -- Put_Tree ----------------------------------------------------------------
    ----------------------------------------------------------------------------
-   procedure Put_Tree( t : in Tree ) is
+   procedure Put_Tree( t : in Tree ) 
+   is
    begin
       Put("TREE:");
       Set_Col(7);
@@ -118,7 +121,8 @@ package body Fruit_Tree is
    ----------------------------------------------------------------------------
    -- Get_Tree ----------------------------------------------------------------
    ----------------------------------------------------------------------------
-   procedure Get_Tree( t : out Tree; input_file : in out File_Type) is
+   procedure Get_Tree( t : out Tree; input_file : in out File_Type) 
+   is
       input : String(1..80);
       length: Integer;
       count : Integer;
@@ -146,7 +150,8 @@ package body Fruit_Tree is
    ----------------------------------------------------------------------------
    -- Put_Fruit ---------------------------------------------------------------
    ----------------------------------------------------------------------------
-   procedure Put_Fruit( f : in Fruit ) is
+   procedure Put_Fruit( f : in Fruit ) 
+   is
    begin
       Set_Col(5);
       Put(f.f_firm);
@@ -162,7 +167,8 @@ package body Fruit_Tree is
    ----------------------------------------------------------------------------
    -- Get_Fruit ---------------------------------------------------------------
    ----------------------------------------------------------------------------
-   procedure Get_Fruit( f : out Fruit; input_file : in out File_Type) is
+   procedure Get_Fruit( f : out Fruit; input_file : in out File_Type) 
+   is
    begin
       Get( input_file, f.f_size );
       Get( input_file, f.f_firm);
@@ -176,7 +182,8 @@ package body Fruit_Tree is
    ----------------------------------------------------------------------------
    -- Put_Float ---------------------------------------------------------------
    ----------------------------------------------------------------------------
-   procedure Put_Float( num : in Float ) is
+   procedure Put_Float( num : in Float ) 
+   is
    begin
       Put(num, Fore => 0, Aft => 1, Exp => 0);
    end Put_Float;
@@ -185,7 +192,8 @@ package body Fruit_Tree is
    ----------------------------------------------------------------------------
    -- Put_Tree_Stats ----------------------------------------------------------
    ----------------------------------------------------------------------------
-   procedure Put_Tree_Stats( ts : in Tree_Stat) is
+   procedure Put_Tree_Stats( ts : in Tree_Stat) 
+   is
    begin
       Set_Col(5);
       Put_Float(ts.f_stat.average);
@@ -212,7 +220,8 @@ package body Fruit_Tree is
    ----------------------------------------------------------------------------
    -- Calculate_Average -------------------------------------------------------
    ----------------------------------------------------------------------------
-   procedure Calculate_Average( qual : in Fruit_Qual; t : in out Tree ) is
+   procedure Calculate_Average( qual : in Fruit_Qual; t : in out Tree ) 
+   is
       sum     : Float := 0.0;
       average : Float := 0.0;
    begin
@@ -236,7 +245,8 @@ package body Fruit_Tree is
    ----------------------------------------------------------------------------
    -- Calculate_Std_Dev -------------------------------------------------------
    ----------------------------------------------------------------------------
-   procedure Calculate_Std_Dev( qual : in Fruit_Qual; t : in out Tree ) is
+   procedure Calculate_Std_Dev( qual : in Fruit_Qual; t : in out Tree ) 
+   is
       sum     : Float := 0.0;
 
       average : Float   := 0.0;
@@ -272,7 +282,8 @@ package body Fruit_Tree is
    ----------------------------------------------------------------------------
    -- Update_Tree_Stats -------------------------------------------------------
    ----------------------------------------------------------------------------
-   procedure Update_Tree_Stats( t : in out Tree ) is
+   procedure Update_Tree_Stats( t : in out Tree ) 
+   is
    begin
       -- Do Firmness
       Calculate_Average( Q_Firmness, t );
@@ -291,7 +302,8 @@ package body Fruit_Tree is
    ----------------------------------------------------------------------------
    -- Get_Fruit_Value ---------------------------------------------------------
    ----------------------------------------------------------------------------
-   function Get_Fruit_Value( f : in Fruit; qual : in Fruit_Qual) return Float is
+   function Get_Fruit_Value( f : in Fruit; qual : in Fruit_Qual) return Float 
+   is
       value : Integer;
    begin
       case qual is
@@ -310,7 +322,8 @@ package body Fruit_Tree is
    ----------------------------------------------------------------------------
    -- Parse_Input_File --------------------------------------------------------
    ----------------------------------------------------------------------------
-   procedure Parse_Input_File(tl : in out Tree_List ) is
+   procedure Parse_Input_File(tl : in out Tree_List ) 
+   is
       KeyWord_Exception : exception;
 
       type    KeyWord     is (TREE, FRUIT);
