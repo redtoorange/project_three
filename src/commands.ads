@@ -27,4 +27,25 @@ private
    -- Valid Commands that the User can enter during command mode
    type Command is (TREES, FRUITS, AVERAGES, QUIT);
 
+   ----------------------------------------------------------
+   -- Purpose: Print all the Trees in the Tree_List along with
+   --    their Fruit count.
+   -- Parameters: tl: Tree_List to print
+   ----------------------------------------------------------
+   procedure Trees_Command (tl : in Tree_List);
+
+   ----------------------------------------------------------
+   -- Purpose: Print all the Fruits of all Trees in the
+   --    Tree_List along with their Fruit count.
+   -- Parameters: tl: Tree_List to print
+   ----------------------------------------------------------
+   procedure Fruits_Command (tl : in Tree_List);
+
+   ----------------------------------------------------------
+   -- Purpose: Print all the Fruit stats of all Trees in the
+   --    Tree_List along with their Fruit count.
+   -- Parameters: tl: Tree_List to print
+   ----------------------------------------------------------
+   procedure Averages_Command (tl : in Tree_List);
+
 end Commands;

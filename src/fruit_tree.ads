@@ -21,9 +21,17 @@ package Fruit_Tree is
    MAX_FRUIT : constant Positive := 20;
    MAX_ID : constant Positive;
 
+   -- Collection of State_Pairs that summarize the Qualities of a Tree's Fruits
    type Tree_Stat is private;
+
+   -- A Tree's unique identification number
    type ID_Number is private;
+
+   -- A Single sample of a Fruit taken from a Tree, represented with three
+   -- Qualities (Size, Firmness and Taste).
    type Fruit is private;
+
+   -- An Array of Fruits
    type Fruit_Array is array (Positive range <>) of Fruit;
 
    -- Represents a single Tree
@@ -93,11 +101,13 @@ private
 
    -- Used to help lookup specific qualities for all Fruit of a Tree
    type Fruit_Qual is (Q_SIZE, Q_FIRMNESS, Q_TASTE);
+
+   -- Represents a specific Fruit Quality or Trait
    type Size is (SMALL, MIDSIZE, LARGE);
    type Firmness is (SOFT, FIRM, HARD);
    type Taste is (BLAND, SWEET, SOUR);
 
-   -- Create an use IO for the Fruit Qualities
+   -- IO Package for a Fruit Quality
    package Size_IO is new Enumeration_IO (Size);
    package Firmness_IO is new Enumeration_IO (Firmness);
    package Taste_IO is new Enumeration_IO (Taste);
@@ -105,8 +115,6 @@ private
    use Firmness_IO;
    use Taste_IO;
 
-   -- A Single sample of a Fruit taken from a Tree, represented with three
-   -- Qualities (Size, Firmness and Taste).
    type Fruit is record
       f_size  : Size;
       f_firm  : Firmness;
@@ -119,14 +127,87 @@ private
       std_dev : Float := 0.0;
    end record;
 
-   -- Collection of State_Pairs that summarize the Qualities of a Tree's Fruits
    type Tree_Stat is record
       f_stat : Stat_Pair;
       t_stat : Stat_Pair;
       s_stat : Stat_Pair;
    end record;
 
-   -- A Tree's unique identification number
    type ID_Number is new Natural range 0 .. MAX_ID;
+
+   ----------------------------------------------------------
+   -- Purpose: Print a Float according to the project specification.
+   -- Parameters: num: Float to print
+   ----------------------------------------------------------
+   procedure Put_Float (num : in Float);
+
+   ----------------------------------------------------------
+   -- Purpose: Determine if a Tree is already in the Tree_List,
+   --    if it is, get it's position.
+   -- Parameters:    tl: Tree_List to look in for c_tree
+   --               pos: position of the c_tree in tl or 0 if not found
+   --            c_tree: Tree to look for
+   -- Returns: True if c_tree was found inside the list, False otherwise.
+   ----------------------------------------------------------
+   function In_List
+     (tl     : in     Tree_List;
+      pos    :    out Positive;
+      c_tree : in     Fruit_Tree.Tree) return Boolean;
+
+   ----------------------------------------------------------
+   -- Purpose: Calculate the average for specified qualities based of this
+   --    Tree's fruit.
+   -- Parameters: qual: Which Fruit Quality to calculate the average for
+   --                t: Tree to update
+   ----------------------------------------------------------
+   procedure Calculate_Average (qual : in Fruit_Qual; t : in out Tree);
+
+   ----------------------------------------------------------
+   -- Purpose: Calculate the standard deviation for specified qualities based
+   --    of this Tree's fruit.
+   -- Parameters: qual: Which Fruit Quality to calculate the average for
+   --                t: Tree to update
+   ----------------------------------------------------------
+   procedure Calculate_Std_Dev (qual : in Fruit_Qual; t : in out Tree);
+
+   ----------------------------------------------------------
+   -- Purpose: Update the average and standard deviation stats for all
+   --     qualities based on this Tree's fruit.
+   -- Parameters: t: Tree to update
+   ----------------------------------------------------------
+   procedure Update_Tree_Stats (t : in out Tree);
+
+   ----------------------------------------------------------
+   -- Purpose: Lookup the numeric value of a fruit's quality
+   -- Parameters:    f: which fruit to evaluate
+   --              key: which quality to lookup
+   -- Returns: The Float value of the Fruit_Key for the given Fruit
+   ----------------------------------------------------------
+   function Get_Fruit_Value (f : in Fruit; qual : in Fruit_Qual) return Float;
+
+   ----------------------------------------------------------
+   -- Purpose: Print the previous line number
+   -- Parameters: input_file: File_Type to look in for a line number
+   ----------------------------------------------------------
+   procedure Print_Error_Line (input_file : in File_Type);
+
+   ----------------------------------------------------------
+   -- Purpose: Read a Tree in from the input_filem placing or locating
+   --    it within the Tree_List.
+   -- Parameters: tl: Tree_List to find/put the new Tree into
+   --            pos: Position of the Tree within the Tree_List
+   --     input_file: File to read the Tree from.
+   ----------------------------------------------------------
+   procedure Parse_Tree
+     (tl         : in out Tree_List;
+      pos        :    out Natural;
+      input_file : in out File_Type);
+
+   ----------------------------------------------------------
+   -- Purpose: Read a Fruit from input_file and attach it to c_tree
+   -- Parameters: c_tree: Tree to attach the Fruit to
+   --         input_file: File to read the Fruit from
+   ----------------------------------------------------------
+   procedure Parse_Fruit (c_tree : in out Tree; input_file : in out File_Type);
 
 end Fruit_Tree;

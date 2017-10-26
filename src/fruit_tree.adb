@@ -10,26 +10,9 @@
 --    by the Fruit_Tree package.
 
 package body Fruit_Tree is
-   procedure Parse_Tree
-     (tl         : in out Tree_List;
-      pos        :    out Natural;
-      input_file : in out File_Type);
-   procedure Parse_Fruit (c_tree : in out Tree; input_file : in out File_Type);
-
-   function Get_Fruit_Value (f : in Fruit; qual : in Fruit_Qual) return Float;
-   procedure Update_Tree_Stats (t : in out Tree);
-   procedure Put_Float (num : in Float);
-   procedure Calculate_Average (qual : in Fruit_Qual; t : in out Tree);
-   procedure Calculate_Std_Dev (qual : in Fruit_Qual; t : in out Tree);
-   procedure Print_Error_Line (input_file : in File_Type);
-   function In_List
-     (tl     : in     Tree_List;
-      pos    :    out Positive;
-      c_tree : in     Tree) return Boolean;
-
-    --########################################################################--
-   ----------------------- Public Subroutines ---------------------------------
-    --########################################################################--
+----------------------######################--------------------------------
+----------------------# Public Subroutines #--------------------------------
+----------------------######################--------------------------------
 
    ----------------------------------------------------------------------------
    -- Parse_Input_File --------------------------------------------------------
@@ -44,40 +27,51 @@ package body Fruit_Tree is
       last_index : Natural := 0;
       input_file : File_Type;
    begin
+      -- Open our Fruit file and read through it until the end.
       Open (File => input_file, Mode => In_File, Name => Argument (1));
 
       while not End_Of_File (input_file) loop
+
          -- Inner Exception Handling to enable recovery from bad input
          begin
+
+            -- Try to use the next token as a KeyWord(Tree or Fruit)
             KeyWord_IO.Get (File => input_file, Item => next_key);
 
             if next_key = TREE then
+               -- Found a Tree, locate it in the list or make a new one.
                Parse_Tree (tl, last_index, input_file);
 
             elsif next_key = FRUIT then
                -- Ensure that the Fruit has a parent Tree
-               if last_index = 0 then
+               if last_index /= 0 then
+                  -- Parse the Fruit and attach it to the current Tree.
+                  Parse_Fruit (tl.trees (last_index), input_file);
+               else
+                  -- No Tree to attach to, toss an error out.
                   raise Fruit_Exp;
                end if;
-
-               Parse_Fruit (tl.trees (last_index), input_file);
             end if;
 
          exception
             when Fruit_Exp =>
+               -- Unparented Fruit
                Print_Error_Line (input_file);
                Put_Line
                  (": Cannot add fruit, it doesn't have a valid parent.");
 
             when Data_Error =>
+               -- Garbage data found
                Print_Error_Line (input_file);
                Put_Line (": Read a non-keyword token, discarding.");
 
-            when Fail : others =>
+            when E : others =>
+               -- Something else, bad times.
                Put ("Unhandled error: ");
-               Put_Line (Exception_Name (Fail));
+               Put_Line (Exception_Name (E));
                return;
          end;
+
       end loop;
 
       Close (File => input_file);
@@ -112,26 +106,28 @@ package body Fruit_Tree is
    -- Get_Tree ----------------------------------------------------------------
    ----------------------------------------------------------------------------
    procedure Get_Tree (t : out Tree; input_file : in out File_Type) is
-      input  : String (1 .. 80);
-      length : Integer;
-      count  : Integer;
+      input    : Natural;
+      next_c   : Character;
+      end_line : Boolean;
 
    begin
-      loop
-         Get_Line (input_file, input, length);
+      -- Grab the next token in the File.
+      Get (input_file, input);
 
-         count := 0;
-         for i in 1 .. length loop
-            if input (i) >= '0' and input (i) <= '9' then
-               count := count + 1;
-            end if;
-         end loop;
-         exit when count > 0;
-      end loop;
+      -- Check the token immediately after the input
+      Look_Ahead (input_file, next_c, end_line);
 
-      t.id := ID_Number (Natural'Value (input (1 .. length)));
+   -- If the next Character was a space or a New_Line, the ID should be valid
+      if next_c = ' ' or end_line then
+         t.id := ID_Number (input);
+      else
+         -- The next character was something else, so the ID is invalid
+         raise Tree_Exp;
+      end if;
    exception
       when others =>
+         -- Convert all Exceptions into a Tree Exception to handle them in a
+         --   more generic way.
          raise Tree_Exp;
    end Get_Tree;
 
@@ -154,12 +150,18 @@ package body Fruit_Tree is
    -- Get_Fruit ---------------------------------------------------------------
    ----------------------------------------------------------------------------
    procedure Get_Fruit (f : out Fruit; input_file : in out File_Type) is
+      temp : Fruit;
    begin
-      Get (input_file, f.f_size);
-      Get (input_file, f.f_firm);
-      Get (input_file, f.f_taste);
+      -- Get the three qualities and store them in temp
+      Get (input_file, temp.f_size);
+      Get (input_file, temp.f_firm);
+      Get (input_file, temp.f_taste);
+
+      -- All three qualities were read without errors, set the output
+      f := temp;
    exception
       when others =>
+         -- One of the qualities was malformed/missing
          raise Fruit_Exp;
    end Get_Fruit;
 
@@ -189,27 +191,21 @@ package body Fruit_Tree is
       Put_Float (ts.s_stat.std_dev);
    end Put_Tree_Stats;
 
-    --########################################################################--
-   ----------------------- Private Subroutines --------------------------------
-    --########################################################################--
+   ----------------------#######################-------------------------------
+   ----------------------# Private Subroutines #-------------------------------
+   ----------------------#######################-------------------------------
 
-   ----------------------------------------------------------
-   -- Purpose: Print a Float according to the project specification.
-   -- Parameters: num: Float to print
-   ----------------------------------------------------------
+   ----------------------------------------------------------------------------
+   -- Put_Float ---------------------------------------------------------------
+   ----------------------------------------------------------------------------
    procedure Put_Float (num : in Float) is
    begin
       Put (num, Fore => 0, Aft => 1, Exp => 0);
    end Put_Float;
 
-   ----------------------------------------------------------
-   -- Purpose: Determine if a Tree is already in the Tree_List,
-   --    if it is, get it's position.
-   -- Parameters:    tl: Tree_List to look in for c_tree
-   --               pos: position of the c_tree in tl or 0 if not found
-   --            c_tree: Tree to look for
-   -- Returns: True if c_tree was found inside the list, False otherwise.
-   ----------------------------------------------------------
+   ----------------------------------------------------------------------------
+   -- In_List -----------------------------------------------------------------
+   ----------------------------------------------------------------------------
    function In_List
      (tl     : in     Tree_List;
       pos    :    out Positive;
@@ -217,7 +213,10 @@ package body Fruit_Tree is
    is
       found : Boolean := False;
    begin
+      -- Linear search for the corrent Tree
       for i in 1 .. tl.count loop
+
+         -- Found it, set the pos
          if c_tree = tl.trees (i) then
             pos   := i;
             found := True;
@@ -229,22 +228,21 @@ package body Fruit_Tree is
       return found;
    end In_List;
 
-   ----------------------------------------------------------
-   -- Purpose: Calculate the average for specified qualities based of this
-   --    Tree's fruit.
-   -- Parameters: qual: Which Fruit Quality to calculate the average for
-   --                t: Tree to update
-   ----------------------------------------------------------
+   ----------------------------------------------------------------------------
+   -- Calculate_Average -------------------------------------------------------
+   ----------------------------------------------------------------------------
    procedure Calculate_Average (qual : in Fruit_Qual; t : in out Tree) is
       sum     : Float := 0.0;
       average : Float := 0.0;
    begin
+      -- Sum the value of the passed quality for the Tree
       for i in 1 .. t.f_count loop
          sum := sum + Get_Fruit_Value (t.fruits (i), qual);
       end loop;
 
       average := sum / Float (t.f_count);
 
+      -- Set the stat based on the quality we were checking
       case qual is
          when Q_SIZE =>
             t.stats.s_stat.average := average;
@@ -255,12 +253,9 @@ package body Fruit_Tree is
       end case;
    end Calculate_Average;
 
-   ----------------------------------------------------------
-   -- Purpose: Calculate the standard deviation for specified qualities based
-   --    of this Tree's fruit.
-   -- Parameters: qual: Which Fruit Quality to calculate the average for
-   --                t: Tree to update
-   ----------------------------------------------------------
+   ----------------------------------------------------------------------------
+   -- Calculate_Std_Dev -------------------------------------------------------
+   ----------------------------------------------------------------------------
    procedure Calculate_Std_Dev (qual : in Fruit_Qual; t : in out Tree) is
 
       use Ada.Numerics.Elementary_Functions;
@@ -269,6 +264,7 @@ package body Fruit_Tree is
       average : Float := 0.0;
       std_dev : Float := 0.0;
    begin
+      -- Grab the average stat from the Tree
       case qual is
          when Q_SIZE =>
             average := t.stats.s_stat.average;
@@ -278,12 +274,14 @@ package body Fruit_Tree is
             average := t.stats.t_stat.average;
       end case;
 
+      -- Perform the summation based on the Standard Deviation forumla
       for i in 1 .. t.f_count loop
          sum := sum + ((Get_Fruit_Value (t.fruits (i), qual) - average)**2);
       end loop;
 
       std_dev := Sqrt (sum / Float (t.f_count));
 
+      -- Set the corresponding quality
       case qual is
          when Q_SIZE =>
             t.stats.s_stat.std_dev := std_dev;
@@ -294,38 +292,34 @@ package body Fruit_Tree is
       end case;
    end Calculate_Std_Dev;
 
-   ----------------------------------------------------------
-   -- Purpose: Update the average and standard deviation stats for all
-   --     qualities based on this Tree's fruit.
-   -- Parameters: t: Tree to update
-   ----------------------------------------------------------
+   ----------------------------------------------------------------------------
+   -- Update_Tree_Stats -------------------------------------------------------
+   ----------------------------------------------------------------------------
    procedure Update_Tree_Stats (t : in out Tree) is
    begin
-      -- Do Firmness
+      -- Update Firmness
       Calculate_Average (Q_FIRMNESS, t);
       Calculate_Std_Dev (Q_FIRMNESS, t);
 
-      -- Do Taste
+      -- Update Taste
       Calculate_Average (Q_TASTE, t);
       Calculate_Std_Dev (Q_TASTE, t);
 
-      -- Do Size
+      -- Update Size
       Calculate_Average (Q_SIZE, t);
       Calculate_Std_Dev (Q_SIZE, t);
    end Update_Tree_Stats;
 
-   ----------------------------------------------------------
-   -- Purpose: Lookup the numeric value of a fruit's quality
-   -- Parameters:    f: which fruit to evaluate
-   --              key: which quality to lookup
-   -- Returns: The Float value of the Fruit_Key for the given Fruit
-   ----------------------------------------------------------
+   ----------------------------------------------------------------------------
+   -- Get_Fruit_Value ---------------------------------------------------------
+   ----------------------------------------------------------------------------
    function Get_Fruit_Value
      (f    : in Fruit;
       qual : in Fruit_Qual) return Float
    is
       value : Integer;
    begin
+      -- Convert the quality into a numerical value
       case qual is
          when Q_SIZE =>
             value := Size'Pos (f.f_size) + 1;
@@ -338,24 +332,19 @@ package body Fruit_Tree is
       return Float (value);
    end Get_Fruit_Value;
 
-   ----------------------------------------------------------
-   -- Purpose: Print the previous line number
-   -- Parameters: input_file: File_Type to look in for a line number
-   ----------------------------------------------------------
+   ----------------------------------------------------------------------------
+   -- Print_Error_Line --------------------------------------------------------
+   ----------------------------------------------------------------------------
    procedure Print_Error_Line (input_file : in File_Type) is
-      line_num : Integer := Integer (Line (input_file)) - 1;
+      line_num : Integer := Integer (Line (input_file));
    begin
       Put ("Error on Line ");
       Put (line_num, 0);
    end Print_Error_Line;
 
-   ----------------------------------------------------------
-   -- Purpose: Read a Tree in from the input_filem placing or locating
-   --    it within the Tree_List.
-   -- Parameters: tl: Tree_List to find/put the new Tree into
-   --            pos: Position of the Tree within the Tree_List
-   --     input_file: File to read the Tree from.
-   ----------------------------------------------------------
+   ----------------------------------------------------------------------------
+   -- Parse_Tree --------------------------------------------------------------
+   ----------------------------------------------------------------------------
    procedure Parse_Tree
      (tl         : in out Tree_List;
       pos        :    out Natural;
@@ -363,6 +352,7 @@ package body Fruit_Tree is
    is
       c_tree : Tree;
    begin
+      -- Read a Tree from the file
       Get_Tree (c_tree, input_file);
 
       -- If tree it not in the list, add it
@@ -374,31 +364,34 @@ package body Fruit_Tree is
 
    exception
       when Tree_Exp =>
+         -- Something was bad with the Tree ID, let the user know
          Print_Error_Line (input_file);
          Put_Line (": Invalid Tree ID.");
          pos := 0;
    end Parse_Tree;
 
-   ----------------------------------------------------------
-   -- Purpose: Read a Fruit from input_file and attach it to c_tree
-   -- Parameters: c_tree: Tree to attach the Fruit to
-   --         input_file: File to read the Fruit from
-   ----------------------------------------------------------
+   ----------------------------------------------------------------------------
+   -- Parse_Fruit -------------------------------------------------------------
+   ----------------------------------------------------------------------------
    procedure Parse_Fruit
      (c_tree     : in out Tree;
       input_file : in out File_Type)
    is
       c_fruit : Fruit;
    begin
+      -- Read in Fruit qualities from the file
       Get_Fruit (c_fruit, input_file);
 
+      -- Attach the Fruit to the Tree
       c_tree.f_count                 := c_tree.f_count + 1;
       c_tree.fruits (c_tree.f_count) := c_fruit;
 
+      -- Update the Average and Standard Deviation for the Tree
       Update_Tree_Stats (c_tree);
 
    exception
       when Fruit_Exp =>
+         -- One of the qualities was missing/malformed, don't add the Fruit
          Print_Error_Line (input_file);
          Put (": Bad Fruit quality for Tree ");
          Put (Integer (c_tree.id), 7);

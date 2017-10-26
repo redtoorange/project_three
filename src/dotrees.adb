@@ -2,8 +2,11 @@
 -- Date: October 21, 2017
 -- Course: ITEC 320 Procedural Analysis and Design
 --
--- Extra Credit Attempted:
+-- !!!Extra Credit Attempted!!!
 --    Extensive error checking
+--        Missing/Bad Input File
+--        Bad Data inside the File
+--        Bad Commands
 --
 -- Purpose: This program loads a specified file from disk, parses the contents
 -- of the file, creating a Tree_List data structure.  After the file has been
@@ -69,19 +72,21 @@ with Commands;   use Commands;
 procedure Dotrees is
 
    ----------------------------------------------------------
-   -- Purpose: Validate the command line arguments and ensure the
-   --   provided file exists.
-   -- Returns: True if a file was specified and it exists, False
+   -- Purpose: Validate the file passed in via command line argument
+   --   and ensure the file exists.
+   -- Returns: True if a file was provided and it exists, False
    --    otherwise.
    ----------------------------------------------------------
    function Valid_Input_File return Boolean is
       valid : Boolean := True;
    begin
+      -- If no arguments, print error and exit.
       if Argument_Count = 0 then
          Put_Line
            ("You must specify an input file as a command line argument.");
          valid := False;
 
+      -- If there was an argument, check that it is an existing file.
       elsif not Exists (Argument (1)) then
          Put_Line ("File <" & Argument (1) & "> does not exist.");
          valid := False;
@@ -96,8 +101,8 @@ procedure Dotrees is
    tl : Tree_List;
 begin
    if Valid_Input_File then
-      Parse_Fruit_File (tl);
+      Parse_Fruit_File (tl);    -- Parse the file into a Tree_List
       New_Line;
-      Process_Commands (tl);
+      Process_Commands (tl);    -- Enter command mode and poll user for input
    end if;
 end Dotrees;

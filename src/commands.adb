@@ -10,15 +10,16 @@
 --    package.
 
 package body Commands is
-   procedure Trees_Command (tl : in Tree_List);
-   procedure Fruits_Command (tl : in Tree_List);
-   procedure Averages_Command (tl : in Tree_List);
+
+   ----------------------######################--------------------------------
+   ----------------------# Public Subroutines #--------------------------------
+   ----------------------######################--------------------------------
 
    ----------------------------------------------------------------------------
    -- Process_Commands --------------------------------------------------------
    ----------------------------------------------------------------------------
    procedure Process_Commands (tl : in Tree_List) is
-      -- Custom input package to handle our command input.
+   -- Custom input package to handle our command input.
       package Command_IO is new Enumeration_IO (Command);
       use Command_IO;
       c_command : Command;
@@ -51,17 +52,17 @@ package body Commands is
                Put_Line ("Invalid Command.");
                Skip_Line;
 
-            when others =>
+            when e : others =>
                -- This is probably fatal, just leave.
-               Put_Line ("An unknown error has occurred, exiting...");
+               Put_Line (Exception_Name (e) & ": " & Exception_Message (e));
                return;
          end;
       end loop;
    end Process_Commands;
 
-    --########################################################################--
-   ----------------------- Private Subroutines --------------------------------
-    --########################################################################--
+   ----------------------#######################-------------------------------
+   ----------------------# Private Subroutines #-------------------------------
+   ----------------------#######################-------------------------------
 
    ----------------------------------------------------------
    -- Purpose: Print all the Trees in the Tree_List along with
