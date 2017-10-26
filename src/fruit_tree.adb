@@ -10,6 +10,22 @@
 --    by the Fruit_Tree package.
 
 package body Fruit_Tree is
+   procedure Parse_Tree( tl : in out Tree_List;
+                         pos : out Natural;
+                         input_file : in out File_Type);
+   procedure Parse_Fruit( c_tree : in out Tree; input_file : in out File_Type );
+   function  Get_Fruit_Value( f : in Fruit; qual : in Fruit_Qual) return Float;
+   procedure Get_Fruit( f : out Fruit; input_file : in out File_Type);
+   function  In_List(tl : in  Tree_List;
+                    pos : out Positive;
+                 c_tree : in  Tree ) return Boolean;
+   procedure Update_Tree_Stats( t : in out Tree );
+   procedure Put_Float( num : in Float );
+   procedure Calculate_Average( qual : in Fruit_Qual; t : in out Tree );
+   procedure Calculate_Std_Dev( qual : in Fruit_Qual; t : in out Tree );
+   
+   
+   
    procedure Print_Error_Line( input_file : in File_Type)   
    is
       line_num : Integer := Integer( Line( input_file ) )-1;

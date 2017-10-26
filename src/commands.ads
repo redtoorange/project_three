@@ -14,29 +14,7 @@ with Ada.Exceptions; use Ada.Exceptions;
 with Fruit_Tree; use Fruit_Tree;
 
 package Commands is
-   ----------------------------------------------------------
-   -- Purpose: Print all the Trees in the Tree_List along with
-   --    their Fruit count.
-   -- Parameters: tl: Tree_List to print
-   ----------------------------------------------------------
-   procedure Trees_Command( tl : in Tree_List );
-   
-   
-   ----------------------------------------------------------
-   -- Purpose: Print all the Fruits of all Trees in the 
-   --    Tree_List along with their Fruit count.
-   -- Parameters: tl: Tree_List to print
-   ----------------------------------------------------------
-   procedure Fruits_Command( tl : in Tree_List );
-   
-   
-   ----------------------------------------------------------
-   -- Purpose: Print all the Fruit stats of all Trees in the 
-   --    Tree_List along with their Fruit count.
-   -- Parameters: tl: Tree_List to print
-   ----------------------------------------------------------
-   procedure Averages_Command( tl : in Tree_List );
-   
+   type Command is private;
    
    ----------------------------------------------------------
    -- Purpose: Compare two the ID's of two trees for equality
@@ -45,10 +23,7 @@ package Commands is
    ----------------------------------------------------------
    procedure Process_Commands( tl : in Tree_List);
    
-   
 private
    -- Valid Commands that the User can enter during command mode
    type Command is (TREES, FRUITS, AVERAGES, QUIT);
-   package Command_IO  is new Enumeration_IO(Command);
-   
 end Commands;

@@ -10,10 +10,18 @@
 --    package.
 
 package body Commands is
-   ----------------------------------------------------------------------------
-   -- Trees_Command -----------------------------------------------------------
-   ----------------------------------------------------------------------------
-   procedure Trees_Command( tl : in Tree_List ) is
+   procedure Trees_Command(    tl : in Tree_List );
+   procedure Fruits_Command(   tl : in Tree_List );
+   procedure Averages_Command( tl : in Tree_List );
+
+
+   ----------------------------------------------------------
+   -- Purpose: Print all the Trees in the Tree_List along with
+   --    their Fruit count.
+   -- Parameters: tl: Tree_List to print
+   ----------------------------------------------------------
+   procedure Trees_Command( tl : in Tree_List )
+   is
    begin
       for t in 1 .. tl.count loop
          Put_Tree( tl.trees(t) );
@@ -22,10 +30,13 @@ package body Commands is
    end Trees_Command;
 
 
-   ----------------------------------------------------------------------------
-   -- Fruits_Command ----------------------------------------------------------
-   ----------------------------------------------------------------------------
-   procedure Fruits_Command( tl : in Tree_List ) is
+   ----------------------------------------------------------
+   -- Purpose: Print all the Fruits of all Trees in the
+   --    Tree_List along with their Fruit count.
+   -- Parameters: tl: Tree_List to print
+   ----------------------------------------------------------
+   procedure Fruits_Command( tl : in Tree_List )
+   is
    begin
       for t in 1 .. tl.count loop
          Put_Tree( tl.trees(t) );
@@ -41,10 +52,13 @@ package body Commands is
    end Fruits_Command;
 
 
-   ----------------------------------------------------------------------------
-   -- Averages_Command --------------------------------------------------------
-   ----------------------------------------------------------------------------
-   procedure Averages_Command( tl : in Tree_List ) is
+   ----------------------------------------------------------
+   -- Purpose: Print all the Fruit stats of all Trees in the
+   --    Tree_List along with their Fruit count.
+   -- Parameters: tl: Tree_List to print
+   ----------------------------------------------------------
+   procedure Averages_Command( tl : in Tree_List )
+   is
    begin
       for t in 1 .. tl.count loop
          Put_Tree( tl.trees(t) );
@@ -59,12 +73,15 @@ package body Commands is
    ----------------------------------------------------------------------------
    -- Process_Commands --------------------------------------------------------
    ----------------------------------------------------------------------------
-   procedure Process_Commands( tl : in Tree_List) is
+   procedure Process_Commands( tl : in Tree_List)
+   is
+      package Command_IO  is new Enumeration_IO(Command);
+      use Command_IO;
       c_command : Command;
    begin
       loop
          begin
-            Command_IO.Get(c_command);
+            Get(c_command);
 
             case c_command is
                when TREES =>
