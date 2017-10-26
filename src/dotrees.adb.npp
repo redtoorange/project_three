@@ -63,41 +63,42 @@ with Ada.Text_IO;      use Ada.Text_IO;
 with Ada.Command_Line; use Ada.Command_Line;
 with Ada.Directories;  use Ada.Directories;
 
-with Fruit_Tree; use Fruit_Tree;
-with Commands;   use Commands;
+with Fruit_Tree;       use Fruit_Tree;
+with Commands;         use Commands;
 
 procedure Dotrees is
 
-   ----------------------------------------------------------
-   -- Purpose: Validate the command line arguments and ensure the
-   --   provided file exists.
-   -- Returns: True if a file was specified and it exists, False
-   --    otherwise.
-   ----------------------------------------------------------
-   function Valid_Input_File return Boolean is
-      valid : Boolean := True;
-   begin
-      if Argument_Count = 0 then
-         Put_Line
-           ("You must specify an input file as a command line argument.");
-         valid := False;
 
-      elsif not Exists (Argument (1)) then
-         Put_Line ("File <" & Argument (1) & "> does not exist.");
-         valid := False;
-      end if;
+    ----------------------------------------------------------
+    -- Purpose: Validate the command line arguments and ensure the
+    --   provided file exists.
+    -- Returns: True if a file was specified and it exists, False
+    --    otherwise.
+    ----------------------------------------------------------
+    function Valid_Input_File return Boolean is
+        valid : Boolean := True;
+    begin
+        if Argument_Count = 0 then
+            Put_Line ("You must specify an input file as a command line argument.");
+            valid := False;
 
-      return valid;
-   end Valid_Input_File;
+        elsif not Exists (Argument (1)) then
+            Put_Line ("File <" & Argument (1) & "> does not exist.");
+            valid := False;
+        end if;
 
-   ----------------------------------------------------------------------------
-   -- Entry Point -------------------------------------------------------------
-   ----------------------------------------------------------------------------
-   tl : Tree_List;
+        return valid;
+    end Valid_Input_File;
+
+
+    ----------------------------------------------------------------------------
+    -- Entry Point -------------------------------------------------------------
+    ----------------------------------------------------------------------------
+    tl : Tree_List;
 begin
-   if Valid_Input_File then
-      Parse_Fruit_File (tl);
-      New_Line;
-      Process_Commands (tl);
-   end if;
+    if Valid_Input_File then
+        Parse_Fruit_File ( tl );
+        New_Line;
+        Process_Commands ( tl );
+    end if;
 end Dotrees;
