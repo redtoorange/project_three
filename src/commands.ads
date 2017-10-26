@@ -9,12 +9,13 @@
 --    a command driven interactive state which is handled by the Commands 
 --    package.
 
-with Ada.Text_IO; use Ada.Text_IO;
+with Ada.Text_IO;    use Ada.Text_IO;
 with Ada.Exceptions; use Ada.Exceptions;
-with Fruit_Tree; use Fruit_Tree;
+with Fruit_Tree;     use Fruit_Tree;
 
 package Commands is
    type Command is private;
+   
    
    ----------------------------------------------------------
    -- Purpose: Compare two the ID's of two trees for equality
@@ -23,7 +24,10 @@ package Commands is
    ----------------------------------------------------------
    procedure Process_Commands( tl : in Tree_List);
    
+   
 private
    -- Valid Commands that the User can enter during command mode
    type Command is (TREES, FRUITS, AVERAGES, QUIT);
+   
+   
 end Commands;

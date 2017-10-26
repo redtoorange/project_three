@@ -59,14 +59,16 @@
 --      3.0       3.0       3.0
 --      0.0       0.0       0.0
 
-with Ada.Text_IO; use Ada.Text_IO;
+with Ada.Text_IO;      use Ada.Text_IO;
 with Ada.Command_Line; use Ada.Command_Line;
-with Ada.Directories; use Ada.Directories;
+with Ada.Directories;  use Ada.Directories;
 
-with Fruit_Tree;   use Fruit_Tree;
-with Commands; use Commands;
+with Fruit_Tree;       use Fruit_Tree;
+with Commands;         use Commands;
 
 procedure Dotrees is
+
+
    ----------------------------------------------------------
    -- Purpose: Validate the command line arguments and ensure the
    --   provided file exists.
@@ -89,14 +91,13 @@ procedure Dotrees is
    end Valid_Input_File;
 
 
-
    ----------------------------------------------------------------------------
    -- Entry Point -------------------------------------------------------------
    ----------------------------------------------------------------------------
    tl : Tree_List;
 begin
    if Valid_Input_File then
-      Parse_Input_File( tl );
+      Parse_Fruit_File( tl );
       New_Line;
       Process_Commands( tl );
    end if;
