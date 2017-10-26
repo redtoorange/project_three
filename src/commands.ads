@@ -14,12 +14,13 @@ with Ada.Exceptions; use Ada.Exceptions;
 with Fruit_Tree;     use Fruit_Tree;
 
 package Commands is
-   type Command is private;
+
+   -- Public Subroutines ----------------------------------------------------
 
    ----------------------------------------------------------
-   -- Purpose: Compare two the ID's of two trees for equality
-   -- Parameters: left, right: Trees to compare
-   -- Returns: True if the ID's match, False otherwise.
+   -- Purpose: Wait for user input, parse that input and execute
+   --    the corresponding commands.
+   -- Parameters: tl: Tree_List to execute commands on
    ----------------------------------------------------------
    procedure Process_Commands (tl : in Tree_List);
 
@@ -27,24 +28,25 @@ private
    -- Valid Commands that the User can enter during command mode
    type Command is (TREES, FRUITS, AVERAGES, QUIT);
 
+   -- Private Subroutines ---------------------------------------------------
+
    ----------------------------------------------------------
-   -- Purpose: Print all the Trees in the Tree_List along with
-   --    their Fruit count.
-   -- Parameters: tl: Tree_List to print
+   -- Purpose: Print each Tree ID, followed by Fruit Count.
+   -- Parameters: tl: Tree_List to pull data from
    ----------------------------------------------------------
    procedure Trees_Command (tl : in Tree_List);
 
    ----------------------------------------------------------
-   -- Purpose: Print all the Fruits of all Trees in the
-   --    Tree_List along with their Fruit count.
-   -- Parameters: tl: Tree_List to print
+   -- Purpose: Print each Tree ID, followed by Fruit Count followed
+   --    all Fruit followed by the statistics for the Tree's Fruit.
+   -- Parameters: tl: Tree_List to pull data from
    ----------------------------------------------------------
    procedure Fruits_Command (tl : in Tree_List);
 
    ----------------------------------------------------------
-   -- Purpose: Print all the Fruit stats of all Trees in the
-   --    Tree_List along with their Fruit count.
-   -- Parameters: tl: Tree_List to print
+   -- Purpose: Print each Tree ID, followed by Fruit Count followed
+   --    by the statistics for the Tree's Fruit.
+   -- Parameters: tl: Tree_List to pull data from
    ----------------------------------------------------------
    procedure Averages_Command (tl : in Tree_List);
 

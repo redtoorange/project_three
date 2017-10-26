@@ -72,8 +72,8 @@ with Commands;   use Commands;
 procedure Dotrees is
 
    ----------------------------------------------------------
-   -- Purpose: Validate the file passed in via command line argument
-   --   and ensure the file exists.
+   -- Purpose: Validate a file passed in via command line argument
+   --   and ensure that it exists.
    -- Returns: True if a file was provided and it exists, False
    --    otherwise.
    ----------------------------------------------------------
@@ -82,8 +82,7 @@ procedure Dotrees is
    begin
       -- If no arguments, print error and exit.
       if Argument_Count = 0 then
-         Put_Line
-           ("You must specify an input file as a command line argument.");
+         Put_Line ("Please specify an input file as an argument.");
          valid := False;
 
          -- If there was an argument, check that it is an existing file.
@@ -95,14 +94,19 @@ procedure Dotrees is
       return valid;
    end Valid_Input_File;
 
-   ----------------------------------------------------------------------------
+
    -- Entry Point -------------------------------------------------------------
-   ----------------------------------------------------------------------------
-   tl : Tree_List;
+   t_list   : Tree_List;
+   f_parsed : Boolean := False;
 begin
+   -- Parse the file into a Tree_List
    if Valid_Input_File then
-      Parse_Fruit_File (tl);    -- Parse the file into a Tree_List
-      New_Line;
-      Process_Commands (tl);    -- Enter command mode and poll user for input
+      Parse_Fruit_File (t_list, f_parsed);
    end if;
+
+   -- Enter command mode and poll user for input
+   if f_parsed then
+      Process_Commands (t_list);
+   end if;
+
 end Dotrees;

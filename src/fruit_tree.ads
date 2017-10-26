@@ -11,9 +11,10 @@
 
 with Ada.Text_IO;         use Ada.Text_IO;
 with Ada.Integer_Text_IO; use Ada.Integer_Text_IO;
-with Ada.Float_Text_IO;   use Ada.Float_Text_IO;
 with Ada.Exceptions;      use Ada.Exceptions;
-with Ada.Command_Line;    use Ada.Command_Line;
+
+with Ada.Float_Text_IO;
+with Ada.Command_Line;
 with Ada.Numerics.Elementary_Functions;
 
 package Fruit_Tree is
@@ -39,7 +40,7 @@ package Fruit_Tree is
       id      : ID_Number;
       fruits  : Fruit_Array (1 .. MAX_FRUIT);
       f_count : Natural := 0;
-      stats   : Tree_Stat;
+      f_stats : Tree_Stat;
    end record;
 
    -- An Array of Trees
@@ -47,16 +48,19 @@ package Fruit_Tree is
 
    -- Collection of Trees
    type Tree_List is record
-      trees : Tree_Array (1 .. MAX_TREES);
-      count : Natural := 0;
+      trees   : Tree_Array (1 .. MAX_TREES);
+      t_count : Natural := 0;
    end record;
+
+-- Public Subroutines ---------------------------------------------------------
 
    ----------------------------------------------------------
    -- Purpose: Parse a Tree_List out of a file.  The file used
    --   is the furst command line argument.
    -- Parameters: tl: Tree_List to read the input into.
+   --        success: was the file parsed successfully
    ----------------------------------------------------------
-   procedure Parse_Fruit_File (tl : in out Tree_List);
+   procedure Parse_Fruit_File (tl : in out Tree_List; success : out Boolean);
 
    ----------------------------------------------------------
    -- Purpose: Prints a tree to the standard output
@@ -134,6 +138,8 @@ private
    end record;
 
    type ID_Number is new Natural range 0 .. MAX_ID;
+
+-- Private Subroutines --------------------------------------------------------
 
    ----------------------------------------------------------
    -- Purpose: Print a Float according to the project specification.

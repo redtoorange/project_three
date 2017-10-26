@@ -10,17 +10,10 @@
 --    package.
 
 package body Commands is
-   procedure Trees_Command (tl : in Tree_List);
-   procedure Fruits_Command (tl : in Tree_List);
-   procedure Averages_Command (tl : in Tree_List);
 
-   ----------------------######################--------------------------------
-   ----------------------# Public Subroutines #--------------------------------
-   ----------------------######################--------------------------------
+   -- Public Subroutines ---------------------------------------------------------
 
-   ----------------------------------------------------------------------------
-   -- Process_Commands --------------------------------------------------------
-   ----------------------------------------------------------------------------
+   -- Process_Commands ------------------------------------------------------
    procedure Process_Commands (tl : in Tree_List) is
    -- Custom input package to handle our command input.
       package Command_IO is new Enumeration_IO (Command);
@@ -28,6 +21,7 @@ package body Commands is
       c_command : Command;
    begin
       -- Continue looping until the user enters "QUIT" or we hit an EoF.
+      Processing_Input :
       loop
          begin
             Get (c_command);
@@ -41,87 +35,73 @@ package body Commands is
                when AVERAGES =>
                   Averages_Command (tl);
                when QUIT =>
-                  return;
+                  exit Processing_Input;
             end case;
 
          exception
             when End_Error =>
                -- Would typically happen if a command file was piped in.
                Put_Line ("End of File Reached.");
-               return;
+               exit Processing_Input;
 
-            when Data_Error =>
+               when Data_Error =>
                -- User put in a bad command, trash it and move on.
                Put_Line ("Invalid Command.");
                Skip_Line;
 
             when e : others =>
                -- This is probably fatal, just leave.
-               Put_Line (Exception_Name (e) & ": "  & Exception_Message (e));
-               return;
+               Put_Line (Exception_Name (e) & ": " & Exception_Message (e));
+               exit Processing_Input;
          end;
-      end loop;
+      end loop Processing_Input;
    end Process_Commands;
 
-   ----------------------#######################-------------------------------
-   ----------------------# Private Subroutines #-------------------------------
-   ----------------------#######################-------------------------------
+   -- Private Subroutines --------------------------------------------------------
 
-   ----------------------------------------------------------
-   -- Purpose: Print all the Trees in the Tree_List along with
-   --    their Fruit count.
-   -- Parameters: tl: Tree_List to print
-   ----------------------------------------------------------
+   -- Trees_Command ---------------------------------------------------------
    procedure Trees_Command (tl : in Tree_List) is
    begin
-      -- For each Tree in the Tree_List, print out the ID and Fruit count.
-      for t in 1 .. tl.count loop
+      for t in 1 .. tl.t_count loop
+         -- Put the Tree's ID and Fruit Count
          Put_Tree (tl.trees (t));
          New_Line;
       end loop;
    end Trees_Command;
 
-   ----------------------------------------------------------
-   -- Purpose: Print all the Fruits of all Trees in the
-   --    Tree_List along with their Fruit count.
-   -- Parameters: tl: Tree_List to print
-   ----------------------------------------------------------
+   -- Fruits_Command --------------------------------------------------------
    procedure Fruits_Command (tl : in Tree_List) is
    begin
-      for t in 1 .. tl.count loop
-         -- Print the Tree, ID and Fruit Count
+      for t in 1 .. tl.t_count loop
+         -- Put the Tree's ID and Fruit Count
          Put_Tree (tl.trees (t));
          Put (":");
          New_Line;
 
-         -- Print all the Fruit attached to the current Tree
+         -- Print the Tree's Fruit
          for f in 1 .. tl.trees (t).f_count loop
             Put_Fruit (tl.trees (t).fruits (f));
             New_Line;
          end loop;
 
-         -- Print the statistics of the Fruit for the current Tree
-         Put_Tree_Stats (tl.trees (t).stats);
+         -- Print the Tree's Stats
+         Put_Tree_Stats (tl.trees (t).f_stats);
          New_Line;
       end loop;
    end Fruits_Command;
 
-   ----------------------------------------------------------
-   -- Purpose: Print all the Fruit stats of all Trees in the
-   --    Tree_List along with their Fruit count.
-   -- Parameters: tl: Tree_List to print
-   ----------------------------------------------------------
+   -- Averages_Command ------------------------------------------------------
    procedure Averages_Command (tl : in Tree_List) is
    begin
-      for t in 1 .. tl.count loop
-         -- Print the Tree, ID and Fruit count.
+      for t in 1 .. tl.t_count loop
+         -- Put the Tree's ID and Fruit Count
          Put_Tree (tl.trees (t));
          Put (":");
 
          New_Line;
 
-         -- Print the Tree's Fruit stats.
-         Put_Tree_Stats (tl.trees (t).stats);
+         -- Print the Tree's Stats
+         Put_Tree_Stats (tl.trees (t).f_stats);
          New_Line;
       end loop;
    end Averages_Command;
