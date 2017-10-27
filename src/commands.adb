@@ -62,9 +62,9 @@ package body Commands is
    -- Trees_Command ---------------------------------------------------------
    procedure Trees_Command (tl : in Tree_List) is
    begin
-      for t in 1 .. tl.t_count loop
+      for t of tl.trees (1 .. tl.t_count) loop
          -- Put the Tree's ID and Fruit Count
-         Put_Tree (tl.trees (t));
+         Put_Tree (t);
          New_Line;
       end loop;
    end Trees_Command;
@@ -72,20 +72,20 @@ package body Commands is
    -- Fruits_Command --------------------------------------------------------
    procedure Fruits_Command (tl : in Tree_List) is
    begin
-      for t in 1 .. tl.t_count loop
+      for t of tl.trees (1 .. tl.t_count) loop
          -- Put the Tree's ID and Fruit Count
-         Put_Tree (tl.trees (t));
+         Put_Tree (t);
          Put (":");
          New_Line;
 
          -- Print the Tree's Fruit
-         for f in 1 .. tl.trees (t).f_count loop
-            Put_Fruit (tl.trees (t).fruits (f));
+         for f of t.fruits (1 .. t.f_count) loop
+            Put_Fruit (f);
             New_Line;
          end loop;
 
          -- Print the Tree's Stats
-         Put_Tree_Stats (tl.trees (t).f_stats);
+         Put_Tree_Stats (t.f_stats);
          New_Line;
       end loop;
    end Fruits_Command;
@@ -93,15 +93,15 @@ package body Commands is
    -- Averages_Command ------------------------------------------------------
    procedure Averages_Command (tl : in Tree_List) is
    begin
-      for t in 1 .. tl.t_count loop
+      for t of tl.trees (1 .. tl.t_count) loop
          -- Put the Tree's ID and Fruit Count
-         Put_Tree (tl.trees (t));
+         Put_Tree (t);
          Put (":");
 
          New_Line;
 
          -- Print the Tree's Stats
-         Put_Tree_Stats (tl.trees (t).f_stats);
+         Put_Tree_Stats (t.f_stats);
          New_Line;
       end loop;
    end Averages_Command;

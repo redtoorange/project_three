@@ -13,11 +13,10 @@ package body Fruit_Tree is
 -- Public Subroutines ---------------------------------------------------------
 
    -- Parse_Input_File ------------------------------------------------------
-   procedure Parse_Fruit_File (tl : in out Tree_List; success : out Boolean) 
-   is
+   procedure Parse_Fruit_File (tl : in out Tree_List; success : out Boolean) is
       use Ada.Command_Line;
-      KeyWord_Exception : exception;
 
+      KeyWord_Exception : exception;
       type KeyWord is (TREE, FRUIT);
       package KeyWord_IO is new Enumeration_IO (KeyWord);
 
@@ -30,7 +29,7 @@ package body Fruit_Tree is
 
       while not End_Of_File (input_file) loop
 
-         -- Inner Exception Handling to enable recovery from bad input
+         -- Inner Exception Handling to allow recovery from bad file data
          begin
 
             -- Try to use the next token as a KeyWord(Tree or Fruit)
@@ -46,18 +45,13 @@ package body Fruit_Tree is
                   -- Parse the Fruit and attach it to the current Tree.
                   Parse_Fruit (tl.trees (last_index), input_file);
                else
-                  -- No Tree to attach to, toss an error out.
-                  raise Fruit_Exp;
+                  -- Unparented Fruit
+                  Print_Error_Line (input_file);
+                  Put_Line (": Cannot add fruit, no parent Tree.");
                end if;
             end if;
 
          exception
-            when Fruit_Exp =>
-               -- Unparented Fruit
-               Print_Error_Line (input_file);
-               Put_Line
-                 (": Cannot add fruit, it doesn't have a valid parent.");
-
             when Data_Error =>
                -- Garbage data found
                Print_Error_Line (input_file);
@@ -65,8 +59,8 @@ package body Fruit_Tree is
 
             when E : others =>
                -- Something else, bad times.
-               Put ("Unhandled error: ");
-               Put_Line (Exception_Name (E));
+               Print_Error_Line (input_file);
+               Put_Line (Exception_Name (E) & ":" & Exception_Message (E));
 
                success := False;
                return;
@@ -75,7 +69,7 @@ package body Fruit_Tree is
       end loop;
 
       success := True;
-      Close (File => input_file);
+      Close (input_file);
    end Parse_Fruit_File;
 
    -- Equals Override -------------------------------------------------------
@@ -94,7 +88,7 @@ package body Fruit_Tree is
    begin
       Put ("TREE:");
       Set_Col (7);
-      Put (Integer (t.id), 7);
+      Put (Natural (t.id), 7);
       Set_Col (17);
       Put (t.f_count, 0);
    end Put_Tree;
@@ -112,7 +106,7 @@ package body Fruit_Tree is
       -- Check the token immediately after the input
       Look_Ahead (input_file, next_c, end_line);
 
-      -- If the next Character was a space or a New_Line, the ID should be valid
+      -- Ensure the next character was a space or newline
       if next_c = ' ' or end_line then
          t.id := ID_Number (input);
       else
@@ -193,7 +187,7 @@ package body Fruit_Tree is
    function In_List
      (tl     : in     Tree_List;
       pos    :    out Positive;
-      c_tree : in     Fruit_Tree.Tree) return Boolean
+      c_tree : in     Tree) return Boolean
    is
       found : Boolean := False;
    begin
@@ -218,8 +212,8 @@ package body Fruit_Tree is
       average : Float := 0.0;
    begin
       -- Sum the value of the passed quality for the Tree
-      for i in 1 .. t.f_count loop
-         sum := sum + Get_Fruit_Value (t.fruits (i), qual);
+      for f of t.fruits (1 .. t.f_count) loop
+         sum := sum + Get_Fruit_Value (qual, f);
       end loop;
 
       average := sum / Float (t.f_count);
@@ -237,10 +231,9 @@ package body Fruit_Tree is
 
    -- Calculate_Std_Dev -----------------------------------------------------
    procedure Calculate_Std_Dev (qual : in Fruit_Qual; t : in out Tree) is
-
       use Ada.Numerics.Elementary_Functions;
+      
       sum : Float := 0.0;
-
       average : Float := 0.0;
       std_dev : Float := 0.0;
    begin
@@ -255,8 +248,8 @@ package body Fruit_Tree is
       end case;
 
       -- Perform the summation based on the Standard Deviation forumla
-      for i in 1 .. t.f_count loop
-         sum := sum + ((Get_Fruit_Value (t.fruits (i), qual) - average) ** 2);
+      for f of t.fruits (1 .. t.f_count) loop
+         sum := sum + ((Get_Fruit_Value (qual, f) - average)**2);
       end loop;
 
       std_dev := Sqrt (sum / Float (t.f_count));
@@ -275,25 +268,28 @@ package body Fruit_Tree is
    -- Update_Tree_Stats -----------------------------------------------------
    procedure Update_Tree_Stats (t : in out Tree) is
    begin
-      -- Update Firmness
-      Calculate_Average (Q_FIRMNESS, t);
-      Calculate_Std_Dev (Q_FIRMNESS, t);
+      if t.f_count > 0 then
+         -- Update Firmness
+         Calculate_Average (Q_FIRMNESS, t);
+         Calculate_Std_Dev (Q_FIRMNESS, t);
 
-      -- Update Taste
-      Calculate_Average (Q_TASTE, t);
-      Calculate_Std_Dev (Q_TASTE, t);
+         -- Update Taste
+         Calculate_Average (Q_TASTE, t);
+         Calculate_Std_Dev (Q_TASTE, t);
 
-      -- Update Size
-      Calculate_Average (Q_SIZE, t);
-      Calculate_Std_Dev (Q_SIZE, t);
+         -- Update Size
+         Calculate_Average (Q_SIZE, t);
+         Calculate_Std_Dev (Q_SIZE, t);
+      end if;
+
    end Update_Tree_Stats;
 
    -- Get_Fruit_Value -------------------------------------------------------
    function Get_Fruit_Value
-     (f    : in Fruit;
-      qual : in Fruit_Qual) return Float
+     (qual : in Fruit_Qual;
+      f    : in Fruit) return Float
    is
-      value : Integer;
+      value : Positive;
    begin
       -- Convert the quality into a numerical value
       case qual is

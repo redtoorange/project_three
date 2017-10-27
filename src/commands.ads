@@ -15,20 +15,20 @@ with Fruit_Tree;     use Fruit_Tree;
 
 package Commands is
 
-   -- Public Subroutines ----------------------------------------------------
+-- Public Subroutines ---------------------------------------------------------
 
    ----------------------------------------------------------
    -- Purpose: Wait for user input, parse that input and execute
-   --    the corresponding commands.
+   --    a corresponding command.
    -- Parameters: tl: Tree_List to execute commands on
    ----------------------------------------------------------
    procedure Process_Commands (tl : in Tree_List);
 
 private
-   -- Valid Commands that the User can enter during command mode
+   -- Valid Commands that the User can enter during "command mode"
    type Command is (TREES, FRUITS, AVERAGES, QUIT);
 
-   -- Private Subroutines ---------------------------------------------------
+-- Private Subroutines --------------------------------------------------------
 
    ----------------------------------------------------------
    -- Purpose: Print each Tree ID, followed by Fruit Count.

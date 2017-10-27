@@ -11,7 +11,7 @@
 -- Purpose: This program loads a specified file from disk, parses the contents
 -- of the file, creating a Tree_List data structure.  After the file has been
 -- processed, it is closed and control is handed to the user.  The user can
--- enter any of four commands:
+-- enter any of the following commands:
 --
 --  "Trees": Output only Tree id number and number of fruit samples
 --  "Averages": Output as in Trees, plus the average and standard deviation of
@@ -62,9 +62,9 @@
 --      3.0       3.0       3.0
 --      0.0       0.0       0.0
 
-with Ada.Text_IO;      use Ada.Text_IO;
-with Ada.Command_Line; use Ada.Command_Line;
-with Ada.Directories;  use Ada.Directories;
+with Ada.Text_IO;
+with Ada.Command_Line;
+with Ada.Directories;
 
 with Fruit_Tree; use Fruit_Tree;
 with Commands;   use Commands;
@@ -72,12 +72,16 @@ with Commands;   use Commands;
 procedure Dotrees is
 
    ----------------------------------------------------------
-   -- Purpose: Validate a file passed in via command line argument
+   -- Purpose: Validate the file passed in as a command line argument
    --   and ensure that it exists.
    -- Returns: True if a file was provided and it exists, False
    --    otherwise.
    ----------------------------------------------------------
    function Valid_Input_File return Boolean is
+      use Ada.Text_IO;
+      use Ada.Command_Line;
+      use Ada.Directories;
+
       valid : Boolean := True;
    begin
       -- If no arguments, print error and exit.
@@ -95,15 +99,15 @@ procedure Dotrees is
    end Valid_Input_File;
 
    -- Entry Point -------------------------------------------------------------
-   t_list   : Tree_List;
-   f_parsed : Boolean := False;
+   t_list   : Tree_List;         -- Data from the file
+   f_parsed : Boolean := False;  -- Was the file parsed successfully
 begin
-   -- Parse the file into a Tree_List
+   -- Validate the command line argument and parse the file.
    if Valid_Input_File then
       Parse_Fruit_File (t_list, f_parsed);
    end if;
 
-   -- Enter command mode and poll user for input
+   -- If the file was parsed, enter "command mode" and poll user for input.
    if f_parsed then
       Process_Commands (t_list);
    end if;
