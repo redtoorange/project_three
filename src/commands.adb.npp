@@ -1,13 +1,13 @@
 -- Name: Andrew McGuiness
--- Date: October 21, 2017
+-- Date: October 26, 2017
 -- Course: ITEC 320 Procedural Analysis and Design
 --
--- package body for the Commands package
+-- Body for the Commands package
 --
--- Purpose: The primary purpose of the commands Package is to simplify the main
---    procedure.  The program and be in one of two states, the second state is
---    a command driven interactive state which is handled by the Commands
---    package.
+-- Purpose: The Commands Package provides a simplified command listening state
+--    to view the data contained inside of a Tree_List.  While in this listen
+--    state the Commands package will give the user read-only access to the
+--    Tree_List data.
 
 package body Commands is
 

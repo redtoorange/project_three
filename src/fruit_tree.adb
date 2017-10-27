@@ -1,13 +1,13 @@
 -- Name: Andrew McGuiness
--- Date: October 21, 2017
+-- Date: October 25, 2017
 -- Course: ITEC 320 Procedural Analysis and Design
 --
--- package body for the Fruit_Tree package
+-- Body for the Fruit_Tree package
 --
--- Purpose: The primary purpose of Fruit_Tree package is to simplify the main
---    procedure.  The program can be in one of two states, the first state is
---    an parsing mode where it builds a Tree_List, this state is handled here,
---    by the Fruit_Tree package.
+-- Purpose: The Fruit_Tree package provides the ability parse an input file
+--   into a Tree_List ADT.  This greatly simplifies the process of importing
+--   Tree data.  Once the data has been imported, it can be easily accessed
+--   with various Put IO commands are are provided by this package.
 
 package body Fruit_Tree is
 -- Public Subroutines ---------------------------------------------------------
